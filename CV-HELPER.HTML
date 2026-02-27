@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV-HELPER | Professional Resume Builder</title>
+    <style>
+        :root { 
+            --primary: #0b3d91; 
+            --accent: #28a745; 
+            --danger: #e74c3c; 
+            --bg: #f0f2f5; 
+            --card-bg: #ffffff; 
+        }
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); 
+            color: #2c3e50; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .app-header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1001; 
+        }
+        .app-header h1 { 
+            margin: 0; 
+            font-size: 2rem; 
+            letter-spacing: 2px; 
+        }
+        #formContainer { 
+            max-width: 850px; 
+            margin: 20px auto 150px; 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+        }
+        .section-card { 
+            border: 1px solid #e1e8ed; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 25px; 
+            background: #fff; 
+            position: relative; 
+        }
+        .section-card h3 { 
+            margin: 0 0 15px 0; 
+            color: var(--primary); 
+            font-size: 1.2rem; 
+            border-bottom: 2px solid #f0f2f5; 
+            padding-bottom: 10px; 
+        }
+        label { 
+            display: block; 
+            margin: 12px 0 5px; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+        }
+        input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #d1d9e0; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 1rem; 
+        }
+        .multi-entry { 
+            background: #f9fbff; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 15px; 
+            border: 1px solid #d6e0f0; 
+            position: relative; 
+        }
+        .removeBtn { 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            background: white; 
+            color: var(--danger); 
+            border: 1px solid var(--danger); 
+            border-radius: 50%; 
+            width: 26px; 
+            height: 26px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            z-index: 5; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .addBtn { 
+            background: #f0f4f8; 
+            color: var(--primary); 
+            border: 1px dashed var(--primary); 
+            padding: 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 10px; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+        }
+        #controls { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: rgba(255,255,255,0.95); 
+            padding: 20px; 
+            text-align: center; 
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1); 
+            z-index: 1000; 
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+        }
+        .mainBtn { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 14px 30px; 
+            border-radius: 30px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 1rem; 
+        }
+        #resumePreview { 
+            width: 210mm; 
+            min-height: 297mm; 
+            padding: 20mm; 
+            background: white; 
+            margin: 20px auto; 
+            display: none; 
+            box-sizing: border-box; 
+        }
+        #resumePreview.visible { 
+            display: block; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.2); 
+        }
+        .cv-header { 
+            text-align: center; 
+            border-bottom: 2px solid var(--primary); 
+            padding-bottom: 15px; 
+            margin-bottom: 25px; 
+        }
+        .cv-header h1 { 
+            margin: 0; 
+            margin-bottom: 12px; 
+            color: var(--primary); 
+            font-size: 28pt; 
+            text-transform: uppercase; 
+        }
+        .cv-section { 
+            margin-bottom: 18px; 
+            break-inside: avoid; 
+        }
+        .cv-section h2 { 
+            font-size: 14pt; 
+            color: var(--primary); 
+            border-bottom: 1px solid #ddd; 
+            margin-bottom: 10px; 
+            padding-bottom: 5px; 
+            text-transform: uppercase; 
+        }
+        .entry-row { 
+            display: flex; 
+            justify-content: space-between; 
+            font-weight: bold; 
+            font-size: 11pt; 
+        }
+        .entry-sub { 
+            display: flex; 
+            justify-content: space-between; 
+            font-style: italic; 
+            margin-bottom: 5px; 
+            font-size: 10.5pt; 
+        }
+        .skill-tag, .lang-tag { 
+            display: inline-block; 
+            background: #f1f3f6; 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            margin: 3px; 
+            font-size: 9.5pt; 
+            border: 1px solid #e1e4e8; 
+        }
+        @media print {
+            body * { visibility: hidden; }
+            .app-header, #formContainer, #controls { display: none !important; }
+            #resumePreview, #resumePreview * { visibility: visible; }
+            #resumePreview { 
+                display: block !important; 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100% !important; 
+                margin: 0 !important; 
+                padding: 12mm !important; 
+            }
+            @page { size: A4; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header"><h1>CV-HELPER</h1></div>
+
+    <div id="formContainer">
+        <!-- 1. Header -->
+        <div class="section-card">
+            <h3>1. Header / Contact Information</h3>
+            <input id="name" placeholder="Full Name" type="text">
+            <div style="display:flex; gap:10px; margin-top:15px">
+                <input id="email" placeholder="Email Address" type="email">
+                <input id="phone" placeholder="Phone Number" type="tel">
+            </div>
+            <input id="address" placeholder="Location" style="margin-top:15px" type="text">
+        </div>
+
+        <div class="section-card">
+            <h3>2. Career Objective</h3>
+            <textarea id="objective" placeholder="Objective..." rows="4"></textarea>
+        </div>
+        
+        <div class="section-card">
+            <h3>3. Technical Skills</h3>
+            <div id="skillsList" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px"></div>
+            <div style="display:flex; gap:10px">
+                <input id="skillInput" placeholder="Skill" type="text">
+                <button class="mainBtn" onclick="addTag('skillInput', 'skillsList', 'skill-tag-input')" type="button">Add</button>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3>4. Projects</h3>
+            <div id="projectsList"></div>
+            <button class="addBtn" onclick="addRow('tpl-project', 'projectsList')" type="button">+ Add Project</button>
+        </div>
+
+        <div class="section-card">
+            <h3>5. Work Experience</h3>
+            <div id="experienceList"></div>
+            <button class="addBtn" onclick="addRow('tpl-experience', 'experienceList')" type="button">+ Add Work Experience</button>
+        </div>
+
+        <div class="section-card">
+            <h3>6. Education</h3>
+            <div id="educationList"></div>
+            <button class="addBtn" onclick="addRow('tpl-education', 'educationList')" type="button">+ Add Education</button>
+        </div>
+
+        <div class="section-card">
+            <h3>7. Certifications</h3>
+            <div id="certList"></div>
+            <button class="addBtn" onclick="addRow('tpl-cert', 'certList')" type="button">+ Add Certification</button>
+        </div>
+
+        <div class="section-card">
+            <h3>8. Achievements</h3>
+            <div id="achieveList"></div>
+            <button class="addBtn" onclick="addRow('tpl-achieve', 'achieveList')" type="button">+ Add Achievement</button>
+        </div>
+        
+        <div class="section-card">
+            <h3>9. Languages</h3>
+            <div id="langList" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px"></div>
+            <div style="display:flex; gap:10px">
+                <input id="langInput" placeholder="Language" type="text">
+                <button class="mainBtn" onclick="addTag('langInput', 'langList', 'lang-tag-input')" type="button">Add</button>
+            </div>
+        </div>
+
+        <div id="customSectionsList"></div>
+    </div>
+
+    <div id="controls">
+        <button class="mainBtn" onclick="addCustomSection()" style="background:#6c757d" type="button">+ CREATE CUSTOM SECTION</button>
+        <button class="mainBtn" onclick="renderPreview()" type="button">PREVIEW CV</button>
+        <button class="mainBtn" disabled id="printBtn" onclick="window.print()" style="background:var(--accent)" type="button">PRINT / PDF</button>
+    </div>
+
+    <div id="resumePreview">
+        <div class="cv-header">
+            <h1 id="pName"> </h1>
+            <p><span id="pEmail"></span> | <span id="pPhone"></span> | <span id="pAddress"></span></p>
+        </div>
+        <div class="cv-section" id="sObj">
+            <h2>Objective</h2>
+            <p id="pObjective" style="font-size: 11pt; text-align: justify;"></p>
+        </div>
+        <div class="cv-section" id="sSkills">
+            <h2>Skills</h2>
+            <div id="pSkills"></div>
+        </div>
+        <div class="cv-section" id="pProjects"></div>
+        <div class="cv-section" id="pExperience"></div>
+        <div class="cv-section" id="pEducation"></div>
+        <div class="cv-section" id="pCerts"></div>
+        <div class="cv-section" id="pAchieve"></div>
+        <div class="cv-section" id="pLangs"></div>
+        <div id="pCustomHolder"></div>
+    </div>
+
+    <!-- HTML TEMPLATES -->
+    <div style="display:none">
+        <div id="tpl-project">
+            <button class="removeBtn" onclick="this.parentElement.remove()">&times;</button>
+            <label>Project Title</label><input class="prj-title" type="text">
+            <label>Technologies</label><input class="prj-link" type="text">
+            <label>Description</label><textarea class="prj-desc" rows="2"></textarea>
+        </div>
+        <div id="tpl-experience">
+            <button class="removeBtn" onclick="this.parentElement.remove()">&times;</button>
+            <label>Company</label><input class="exp-comp" type="text">
+            <label>Role</label><input class="exp-role" type="text">
+            <label>Duration</label><input class="exp-date" type="text">
+            <label>Duties (use ; for bullets)</label><textarea class="exp-desc"></textarea>
+        </div>
+        <div id="tpl-education">
+            <button class="removeBtn" onclick="this.parentElement.remove()">&times;</button>
+            <label>Institution</label><input class="edu-inst" type="text">
+            <label>Degree</label><input class="edu-deg" type="text">
+            <div style="display:flex; gap:10px">
+                <div style="flex:1"><label>Year</label><input class="edu-year" type="text"></div>
+                <div style="flex:1"><label>CGPA</label><input class="edu-perc" type="text"></div>
+            </div>
+        </div>
+        <div id="tpl-cert">
+            <button class="removeBtn" onclick="this.parentElement.remove()">&times;</button>
+            <label>Certificate</label><input class="cert-name" type="text">
+            <label>Org and Year</label><input class="cert-org" type="text">
+        </div>
+        <div id="tpl-achieve">
+            <button class="removeBtn" onclick="this.parentElement.remove()">&times;</button>
+            <label>Achievement</label><input class="achieve-val" type="text">
+        </div>
+        <div id="tpl-custom-entry">
+            <button class="removeBtn" onclick="this.parentElement.remove()">&times;</button>
+            <label>Heading</label><input class="cust-head" type="text">
+            <label>Description</label><textarea class="cust-desc" rows="2"></textarea>
+        </div>
+    </div>
+
+    <script>
+        function addRow(tplId, destId) {
+            var tpl = document.getElementById(tplId);
+            var dest = document.getElementById(destId);
+            var div = document.createElement('div');
+            div.className = 'multi-entry';
+            div.innerHTML = tpl.innerHTML;
+            dest.appendChild(div);
+        }
+
+        function addTag(inputId, listId, className) {
+            var input = document.getElementById(inputId);
+            var val = input.value.trim();
+            if(!val) return;
+            var span = document.createElement('span');
+            span.className = className;
+            span.style = "background:#f1f3f6; padding:6px 12px; border-radius:20px; display:flex; align-items:center; gap:10px; border:1px solid #ddd; font-size:0.9rem;";
+            span.innerHTML = val + ' <span style="cursor:pointer; color:red; font-weight:bold" onclick="this.parentElement.remove()">×</span>';
+            span.setAttribute('data-value', val);
+            document.getElementById(listId).appendChild(span);
+            input.value = '';
+        }
+
+        function addCustomSection() {
+            var title = prompt("Enter Section Title:");
+            if(!title) return;
+            var div = document.createElement('div');
+            div.className = 'section-card custom-card';
+            div.setAttribute('data-title', title);
+            var listId = 'customList_' + Math.random().toString(36).substr(2, 9);
+            div.innerHTML = '<button class="removeBtn" onclick="this.parentElement.remove()">×</button><h3>' + title + '</h3><div class="custom-entries-list" id="' + listId + '"></div><button class="addBtn" onclick="addRow(\'tpl-custom-entry\', \'' + listId + '\')" type="button">+ Add Entry</button>';
+            document.getElementById('customSectionsList').appendChild(div);
+        }
+
+        function renderPreview() {
+            document.getElementById('pName').innerText = document.getElementById('name').value || "YOUR NAME";
+            document.getElementById('pEmail').innerText = document.getElementById('email').value;
+            document.getElementById('pPhone').innerText = document.getElementById('phone').value;
+            document.getElementById('pAddress').innerText = document.getElementById('address').value;
+            document.getElementById('pObjective').innerText = document.getElementById('objective').value;
+
+            document.getElementById('pSkills').innerHTML = Array.from(document.querySelectorAll('.skill-tag-input')).map(function(s) {
+                return '<span class="skill-tag">' + s.getAttribute('data-value') + '</span>';
+            }).join('');
+
+            var prjHtml = '<h2>Projects</h2>';
+            document.querySelectorAll('#projectsList .multi-entry').forEach(function(el) {
+                prjHtml += '<div style="margin-bottom:12px"><div class="entry-row"><span>' + el.querySelector('.prj-title').value + '</span><span>' + el.querySelector('.prj-link').value + '</span></div><p style="margin:2px 0; font-size:10.5pt">' + el.querySelector('.prj-desc').value + '</p></div>';
+            });
+            document.getElementById('pProjects').innerHTML = document.querySelectorAll('#projectsList .multi-entry').length ? prjHtml : '';
+
+            var expHtml = '<h2>Experience</h2>';
+            document.querySelectorAll('#experienceList .multi-entry').forEach(function(el) {
+                var items = el.querySelector('.exp-desc').value.split(';').map(function(i) { return i.trim() ? '<li>' + i + '</li>' : ''; }).join('');
+                expHtml += '<div style="margin-bottom:15px"><div class="entry-row"><span>' + el.querySelector('.exp-comp').value + '</span><span>' + el.querySelector('.exp-date').value + '</span></div><div class="entry-sub"><span>' + el.querySelector('.exp-role').value + '</span></div><ul style="margin:0; padding-left:15px; font-size:10.5pt">' + items + '</ul></div>';
+            });
+            document.getElementById('pExperience').innerHTML = document.querySelectorAll('#experienceList .multi-entry').length ? expHtml : '';
+
+            var eduHtml = '<h2>Education</h2>';
+            document.querySelectorAll('#educationList .multi-entry').forEach(function(el) {
+                var perc = el.querySelector('.edu-perc').value ? ' | <b>' + el.querySelector('.edu-perc').value + '</b>' : '';
+                eduHtml += '<div class="entry-row" style="margin-top:5px"><span>' + el.querySelector('.edu-inst').value + '</span><span>' + el.querySelector('.edu-year').value + '</span></div><p style="margin:2px 0; font-style:italic; font-size:10.5pt">' + el.querySelector('.edu-deg').value + perc + '</p>';
+            });
+            document.getElementById('pEducation').innerHTML = document.querySelectorAll('#educationList .multi-entry').length ? eduHtml : '';
+
+            var certHtml = '<h2>Certifications</h2>';
+            document.querySelectorAll('#certList .multi-entry').forEach(function(el) {
+                certHtml += '<div class="entry-row"><span>' + el.querySelector('.cert-name').value + '</span><span>' + el.querySelector('.cert-org').value + '</span></div>';
+            });
+            document.getElementById('pCerts').innerHTML = document.querySelectorAll('#certList .multi-entry').length ? certHtml : '';
+
+            var achHtml = '<h2>Achievements</h2><ul>';
+            document.querySelectorAll('#achieveList .multi-entry').forEach(function(el) {
+                if(el.querySelector('.achieve-val').value) achHtml += '<li>' + el.querySelector('.achieve-val').value + '</li>';
+            });
+            document.getElementById('pAchieve').innerHTML = document.querySelectorAll('#achieveList .multi-entry').length ? achHtml + '</ul>' : '';
+
+            document.getElementById('pLangs').innerHTML = document.querySelectorAll('.lang-tag-input').length ? '<h2>Languages</h2>' + Array.from(document.querySelectorAll('.lang-tag-input')).map(function(s) { return '<span class="lang-tag">' + s.getAttribute('data-value') + '</span>'; }).join('') : '';
+
+            var customHtml = '';
+            document.querySelectorAll('#customSectionsList .custom-card').forEach(function(card) {
+                var entries = '';
+                card.querySelectorAll('.multi-entry').forEach(function(entry) {
+                    entries += '<div style="margin-bottom:10px"><div class="entry-row"><span>' + entry.querySelector('.cust-head').value + '</span></div><p style="margin:2px 0; font-size:10.5pt">' + entry.querySelector('.cust-desc').value + '</p></div>';
+                });
+                if(entries) customHtml += '<div class="cv-section"><h2>' + card.getAttribute('data-title') + '</h2>' + entries + '</div>';
+            });
+            document.getElementById('pCustomHolder').innerHTML = customHtml;
+
+            document.getElementById('resumePreview').classList.add('visible');
+            document.getElementById('printBtn').removeAttribute('disabled');
+            window.scrollTo({top: document.getElementById('resumePreview').offsetTop, behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>
